@@ -148,7 +148,7 @@ for ($i = 5; $i >= 0; $i--) {
       </ul>
       <div>
         <a href="tambah_pemasukan.php?from=transaksi" class="btn btn-success">+ Tambah Pemasukan</a>
-        <a href="tambah_pengeluaran.php" class="btn btn-danger">+ Tambah Pengeluaran</a>
+        <a href="tambah_pengeluaran.php?from=transaksi" class="btn btn-danger">+ Tambah Pengeluaran</a>
       </div>
     </div>
 
@@ -182,8 +182,8 @@ for ($i = 5; $i >= 0; $i--) {
                 <a href="edit_pemasukan.php?id=<?= $row['id'] ?>&from=transaksi" class="text-primary me-2"><i class="bi bi-pencil-square"></i></a>
                 <a href="hapus_pemasukan.php?id=<?= $row['id'] ?>&from=transaksi" class="text-danger" onclick="return confirm('Yakin ingin menghapus pemasukan ini?')"><i class="bi bi-trash-fill"></i></a>
               <?php else: ?>
-                <a href="edit_pengeluaran.php?id=<?= $row['id'] ?>" class="text-primary me-2"><i class="bi bi-pencil-square"></i></a>
-                <a href="hapus_pengeluaran.php?id=<?= $row['id'] ?>" class="text-danger" onclick="return confirm('Yakin ingin menghapus pengeluaran ini?')"><i class="bi bi-trash-fill"></i></a>
+                <a href="edit_pengeluaran.php?id=<?= $row['id'] ?>&from=transaksi" class="text-primary me-2"><i class="bi bi-pencil-square"></i></a>
+                <a href="hapus_pengeluaran.php?id=<?= $row['id'] ?>&from=transaksi" class="text-danger" onclick="return confirm('Yakin ingin menghapus pengeluaran ini?')"><i class="bi bi-trash-fill"></i></a>
               <?php endif; ?>
             </td>
           </tr>
