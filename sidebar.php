@@ -5,7 +5,7 @@
       <h4 class="text-primary fw-bold">Cashiary</h4>
       <ul class="nav flex-column mt-4">
         <li class="nav-item">
-          <a href="dashboard.php" class="nav-link <?= $halaman == 'dashboard.php' ? 'active text-primary fw-bold' : 'text-dark' ?>">
+          <a href="index.php" class="nav-link <?= $halaman == 'index.php' ? 'active text-primary fw-bold' : 'text-dark' ?>">
             Dashboard
           </a>
         </li>
