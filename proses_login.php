@@ -20,12 +20,14 @@ if ($result->num_rows === 1) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
 
-        header("Location: dashboard.php");
+        header("Location: index.php");
         exit;
     } else {
-        echo "Password salah!";
+        header("Location: login.php?error=Password salah!");
+        exit;
     }
 } else {
-    echo "Email tidak ditemukan!";
+    header("Location: login.php?error=Email tidak ditemukan!");
+    exit;
 }
 ?>
