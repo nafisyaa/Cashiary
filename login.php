@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (isset($_SESSION['user_id'])) {
+    header("Location: index.php"); // jika sudah login, alihkan ke index
+    exit;
+}
 $error = $_GET['error'] ?? null;
 ?>
 
