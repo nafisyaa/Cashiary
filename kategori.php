@@ -1,6 +1,4 @@
 <?php
-// Pastikan Anda sudah menambahkan kolom 'jenis' ke tabel 'kategori' di database Anda.
-// Contoh SQL: ALTER TABLE `kategori` ADD COLUMN `jenis` VARCHAR(15) NOT NULL DEFAULT 'pengeluaran' AFTER `nama_kategori`;
 
 $pageTitle = 'Manajemen Kategori - Cashiary'; // Judul halaman spesifik
 include 'sidebar.php';
@@ -213,4 +211,42 @@ $kategori_query = mysqli_query($conn, "SELECT kategori_id, nama_kategori, jenis 
 </div>
 
 <?php include 'footer.php'; ?>
+
+<script>
+    // JavaScript untuk mengelola modal Tambah/Edit
+    var modalAddEditKategori = document.getElementById('modalAddEditKategori');
+    modalAddEditKategori.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Tombol yang memicu modal
+        var mode = button.getAttribute('data-mode'); // Ambil mode: 'add' atau 'edit'
+
+        var modalTitle = modalAddEditKategori.querySelector('.modal-title');
+        var submitButton = modalAddEditKategori.querySelector('#submitModalBtn');
+        var form = modalAddEditKategori.querySelector('form');
+        var namaKategoriInput = modalAddEditKategori.querySelector('#nama_kategori_modal');
+        var kategoriIdInput = modalAddEditKategori.querySelector('#edit_kategori_id');
+        var jenisKategoriSelect = modalAddEditKategori.querySelector('#jenis_kategori_modal');
+
+        if (mode === 'add') {
+            modalTitle.textContent = 'Tambah Kategori';
+            submitButton.textContent = 'Simpan';
+            submitButton.name = 'add_kategori_submit'; // Nama submit untuk operasi tambah
+            form.action = 'kategori.php'; // Arahkan form ke kategori.php
+            namaKategoriInput.value = ''; // Kosongkan input
+            kategoriIdInput.value = ''; // Kosongkan ID
+            jenisKategoriSelect.value = 'pengeluaran'; // Default jenis ke pengeluaran
+        } else if (mode === 'edit') {
+            modalTitle.textContent = 'Edit Kategori';
+            submitButton.textContent = 'Update';
+            submitButton.name = 'edit_kategori_submit'; // Nama submit untuk operasi edit
+            form.action = 'kategori.php'; // Arahkan form ke kategori.php
+            
+            var id = button.getAttribute('data-id');
+            var nama = button.getAttribute('data-nama');
+            var jenis = button.getAttribute('data-jenis'); 
+
+            kategoriIdInput.value = id;
+            namaKategoriInput.value = nama;
+            if (jenisKategoriSelect && jenis) jenisKategoriSelect.value = jenis; // Set jenis
+        }
+    });
 </script>
