@@ -14,10 +14,11 @@ $user_id = $_SESSION['user_id'];
 $allowedPages = ['transaksi', 'pemasukan'];
 $redirectPage = in_array($_GET['from'] ?? '', $allowedPages) ? $_GET['from'] : 'pemasukan';
 
+// ✅ Ambil kategori pemasukan hanya milik user login
 $kategoriQuery = mysqli_query($conn, "
   SELECT kategori_id, nama_kategori 
   FROM kategori 
-  WHERE jenis = 'pemasukan'
+  WHERE jenis = 'pemasukan' AND user_id = $user_id
   ORDER BY nama_kategori
 ");
 
@@ -33,7 +34,6 @@ if (isset($_POST['submit'])) {
     if (!$jumlah || !is_numeric($jumlah) || $jumlah <= 0) $errors[] = "Jumlah harus berupa angka positif.";
 
     if (empty($errors)) {
-        // Sanitasi & simpan ke DB
         $tanggal = mysqli_real_escape_string($conn, $tanggal);
         $kategori_id = (int)$kategori_id;
         $deskripsi = mysqli_real_escape_string($conn, $deskripsi);
