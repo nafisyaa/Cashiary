@@ -1,7 +1,15 @@
 <?php
+session_start();
+
 include 'header.php';
 include 'sidebar.php';
 include 'db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+$user_id = $_SESSION['user_id'];
 ?>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -18,7 +26,6 @@ include 'db.php';
       <a href="tambah_pengeluaran.php?from=pengeluaran" class="btn btn-danger">+ Tambah Pengeluaran</a>
     </div>
 
-    <!-- Tabel -->
     <div class="table-responsive">
       <table class="table table-striped w-100 align-middle">
         <thead class="table-light">
@@ -32,10 +39,14 @@ include 'db.php';
         </thead>
         <tbody>
           <?php
-          $query = mysqli_query($conn, "SELECT pengeluaran.*, kategori.nama_kategori 
-                                         FROM pengeluaran 
-                                         JOIN kategori ON pengeluaran.kategori_id = kategori.kategori_id 
-                                         ORDER BY tanggal DESC");
+          $query = mysqli_query($conn, 
+              "SELECT pengeluaran.*, kategori.nama_kategori 
+               FROM pengeluaran 
+               JOIN kategori ON pengeluaran.kategori_id = kategori.kategori_id 
+               WHERE pengeluaran.user_id = $user_id
+               ORDER BY tanggal DESC"
+          );
+          
           while ($row = mysqli_fetch_assoc($query)) {
           ?>
             <tr>
