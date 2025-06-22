@@ -56,6 +56,14 @@ $user_id = $_SESSION['user_id'];
               </td>
               <td><?= htmlspecialchars($row['deskripsi']) ?></td>
               <td class="text-success">+Rp <?= number_format($row['jumlah'], 0, ',', '.') ?></td>
+              <td>
+                <a href="edit_pemasukan.php?id=<?= $row['id'] ?>&from=pemasukan" class="text-primary me-2">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <a href="hapus_pemasukan.php?id=<?= $row['id'] ?>&from=pemasukan" class="text-danger" onclick="return confirm('Yakin ingin menghapus?')">
+                  <i class="bi bi-trash-fill"></i>
+                </a>
+              </td>
             </tr>
           <?php } ?>
         </tbody>
