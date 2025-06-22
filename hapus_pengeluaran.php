@@ -2,9 +2,14 @@
 include 'db.php';
 
 $id = $_GET['id'];
+$from = $_GET['from'] ?? 'pengeluaran';
 
-$query = "DELETE FROM pengeluaran WHERE id = $id";
-$koneksi->query($query);
+if ($id) {
+    // Hapus data pemasukan berdasarkan id
+    mysqli_query($conn, "DELETE FROM pengeluaran WHERE id = $id");
+}
 
-header("Location: pengeluaran.php");
+// Redirect ke halaman asal dengan status
+header("Location: {$from}.php?status=deleted");
+exit;
 ?>
