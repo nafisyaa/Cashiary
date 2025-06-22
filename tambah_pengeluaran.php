@@ -5,22 +5,26 @@ include 'header.php';
 include 'sidebar.php';
 include 'db.php';
 
+// Cek login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
 }
 $user_id = $_SESSION['user_id'];
 
+// Cek asal halaman
 $allowedPages = ['transaksi', 'pengeluaran'];
 $redirectPage = in_array($_GET['from'] ?? '', $allowedPages) ? $_GET['from'] : 'pengeluaran';
 
+// Ambil kategori pengeluaran milik user
 $kategoriQuery = mysqli_query($conn, "
   SELECT kategori_id, nama_kategori 
   FROM kategori 
-  WHERE jenis = 'pengeluaran' 
+  WHERE jenis = 'pengeluaran' AND user_id = $user_id
   ORDER BY nama_kategori
 ");
 
+// Proses submit
 if (isset($_POST['submit'])) {
     $tanggal = $_POST['tanggal'] ?? '';
     $kategori_id = $_POST['kategori_id'] ?? '';
