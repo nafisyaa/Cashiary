@@ -105,6 +105,26 @@ $totalKeluar = array_sum(array_column(array_filter($transaksi, fn($t) => $t['tip
           <th>Jenis</th>
         </tr>
       </thead>
+      <tbody>
+        <?php if (count($transaksi) == 0): ?>
+          <tr><td colspan="5" class="text-center">Tidak ada data transaksi untuk periode ini</td></tr>
+        <?php else: ?>
+          <?php foreach ($transaksi as $t): ?>
+            <tr>
+              <td><?= date('d M Y', strtotime($t['tanggal'])) ?></td>
+              <td><?= htmlspecialchars($t['nama_kategori']) ?></td>
+              <td><?= htmlspecialchars($t['deskripsi']) ?></td>
+              <td class="<?= $t['tipe'] == 'Pengeluaran' ? 'text-danger' : 'text-success' ?>">
+                <?= $t['tipe'] == 'Pengeluaran' ? '- ' : '+ ' ?>
+                Rp <?= number_format($t['jumlah'], 0, ',', '.') ?>
+              </td>
+              <td><span class="badge bg-<?= $t['tipe'] == 'Pengeluaran' ? 'danger' : 'success' ?>">
+                <?= htmlspecialchars($t['tipe']) ?>
+              </span></td>
+            </tr>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </tbody>
     </table>
   </div>
 </div>
