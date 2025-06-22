@@ -1,28 +1,26 @@
 <?php
+session_start();
+
 include 'header.php';
 include 'sidebar.php';
 include 'db.php';
 
-// Tentukan halaman asal (default ke pengeluaran)
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+$user_id = $_SESSION['user_id'];
+
 $allowedPages = ['transaksi', 'pengeluaran'];
 $redirectPage = in_array($_GET['from'] ?? '', $allowedPages) ? $_GET['from'] : 'pengeluaran';
 
-// Ambil daftar kategori pengeluaran saja
 $kategoriQuery = mysqli_query($conn, "
   SELECT kategori_id, nama_kategori 
   FROM kategori 
-  WHERE nama_kategori IN (
-    'makanan & minuman', 
-    'transportasi', 
-    'hiburan', 
-    'tagihan & utilitas', 
-    'kesehatan & obat-obatan', 
-    'pendidikan'
-  ) 
+  WHERE jenis = 'pengeluaran' 
   ORDER BY nama_kategori
 ");
 
-// Proses form submit
 if (isset($_POST['submit'])) {
     $tanggal = $_POST['tanggal'] ?? '';
     $kategori_id = $_POST['kategori_id'] ?? '';
@@ -35,15 +33,14 @@ if (isset($_POST['submit'])) {
     if (!$jumlah || !is_numeric($jumlah) || $jumlah <= 0) $errors[] = "Jumlah harus berupa angka positif.";
 
     if (empty($errors)) {
-        // Sanitasi & simpan ke DB
         $tanggal = mysqli_real_escape_string($conn, $tanggal);
         $kategori_id = (int)$kategori_id;
         $deskripsi = mysqli_real_escape_string($conn, $deskripsi);
         $jumlah = (float)$jumlah;
 
         $insert = mysqli_query($conn, "
-            INSERT INTO pengeluaran (tanggal, kategori_id, deskripsi, jumlah) 
-            VALUES ('$tanggal', $kategori_id, '$deskripsi', $jumlah)
+            INSERT INTO pengeluaran (user_id, tanggal, kategori_id, deskripsi, jumlah) 
+            VALUES ($user_id, '$tanggal', $kategori_id, '$deskripsi', $jumlah)
         ");
 
         if ($insert) {
