@@ -1,43 +1,44 @@
 <?php
+session_start();
+
 include 'header.php';
 include 'sidebar.php';
 include 'db.php';
 
-// Ambil id pengeluaran
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+$user_id = $_SESSION['user_id'];
+
+// Ambil ID pengeluaran
 $id = $_GET['id'] ?? null;
 if (!$id || !is_numeric($id)) {
-    header('Location: pengeluaran.php');
+    header("Location: pengeluaran.php");
     exit;
 }
 
-// Tentukan asal halaman untuk redirect (default: pengeluaran.php)
+// Cek asal halaman
 $allowedPages = ['transaksi', 'pengeluaran'];
 $redirectPage = in_array($_GET['from'] ?? '', $allowedPages) ? $_GET['from'] : 'pengeluaran';
 
-// Ambil data pengeluaran
-$dataQuery = mysqli_query($conn, "SELECT * FROM pengeluaran WHERE id = $id");
+// ✅ Ambil data pengeluaran milik user
+$dataQuery = mysqli_query($conn, "SELECT * FROM pengeluaran WHERE id = $id AND user_id = $user_id");
 $pengeluaran = mysqli_fetch_assoc($dataQuery);
 if (!$pengeluaran) {
     header("Location: {$redirectPage}.php");
     exit;
 }
 
-// Ambil kategori untuk pengeluaran
+// ✅ Ambil kategori pengeluaran milik user
 $kategoriQuery = mysqli_query($conn, "
-    SELECT kategori_id, nama_kategori 
-    FROM kategori 
-    WHERE nama_kategori IN (
-        'makanan & minuman', 
-        'transportasi', 
-        'hiburan', 
-        'tagihan & utilitas', 
-        'kesehatan & obat-obatan', 
-        'pendidikan'
-    )
-    ORDER BY nama_kategori
+  SELECT kategori_id, nama_kategori 
+  FROM kategori 
+  WHERE jenis = 'pengeluaran' AND user_id = $user_id
+  ORDER BY nama_kategori
 ");
 
-// Proses update jika disubmit
+// Proses update
 if (isset($_POST['submit'])) {
     $tanggal = $_POST['tanggal'] ?? '';
     $kategori_id = $_POST['kategori_id'] ?? '';
@@ -58,7 +59,7 @@ if (isset($_POST['submit'])) {
         $update = mysqli_query($conn, "
             UPDATE pengeluaran 
             SET tanggal='$tanggal', kategori_id=$kategori_id, deskripsi='$deskripsi', jumlah=$jumlah 
-            WHERE id=$id
+            WHERE id=$id AND user_id=$user_id
         ");
 
         if ($update) {
@@ -96,7 +97,7 @@ if (isset($_POST['submit'])) {
         <option value="">-- Pilih Kategori --</option>
         <?php while ($kategori = mysqli_fetch_assoc($kategoriQuery)) : ?>
           <?php 
-            $selected = $_POST['kategori_id'] ?? $pengeluaran['kategori_id']; 
+            $selected = $_POST['kategori_id'] ?? $pengeluaran['kategori_id'];
             $isSelected = ($kategori['kategori_id'] == $selected) ? 'selected' : '';
           ?>
           <option value="<?= $kategori['kategori_id'] ?>" <?= $isSelected ?>>
