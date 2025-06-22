@@ -1,7 +1,18 @@
 <?php
+session_start();
+
+// Pastikan user sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
 include 'header.php';
 include 'sidebar.php';
 include 'db.php';
+
+// Ambil user_id dari session
+$user_id = $_SESSION['user_id'];
 
 // Tentukan asal halaman (default ke kategori)
 $allowedPages = ['kategori', 'pengaturan'];
@@ -12,21 +23,21 @@ $errors = [];
 
 // Proses form submit
 if (isset($_POST['submit'])) {
-    $nama = trim($_POST['nama'] ?? '');
+    $nama  = trim($_POST['nama'] ?? '');
     $jenis = $_POST['jenis'] ?? '';
 
-    // Validasi
+    // Validasi input
     if ($nama === '') $errors[] = "Nama kategori wajib diisi.";
     if (!in_array($jenis, ['pemasukan', 'pengeluaran'])) $errors[] = "Jenis kategori tidak valid.";
 
-    // Jika valid
     if (empty($errors)) {
-        $nama = mysqli_real_escape_string($conn, $nama);
+        $nama  = mysqli_real_escape_string($conn, $nama);
         $jenis = mysqli_real_escape_string($conn, $jenis);
 
+        // INSERT dengan user_id
         $insert = mysqli_query($conn, "
-            INSERT INTO kategori (nama_kategori, jenis)
-            VALUES ('$nama', '$jenis')
+            INSERT INTO kategori (nama_kategori, jenis, user_id)
+            VALUES ('$nama', '$jenis', $user_id)
         ");
 
         if ($insert) {
