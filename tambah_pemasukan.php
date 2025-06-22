@@ -1,28 +1,26 @@
 <?php
+session_start();
+
 include 'header.php';
 include 'sidebar.php';
 include 'db.php';
 
-// Tentukan halaman asal (default ke pemasukan)
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+$user_id = $_SESSION['user_id'];
+
 $allowedPages = ['transaksi', 'pemasukan'];
 $redirectPage = in_array($_GET['from'] ?? '', $allowedPages) ? $_GET['from'] : 'pemasukan';
 
-// Ambil daftar kategori untuk pemasukan
 $kategoriQuery = mysqli_query($conn, "
   SELECT kategori_id, nama_kategori 
   FROM kategori 
-  WHERE nama_kategori NOT IN (
-    'makanan & minuman', 
-    'transportasi', 
-    'hiburan', 
-    'tagihan & utilitas', 
-    'kesehatan & obat-obatan', 
-    'pendidikan'
-  ) 
+  WHERE jenis = 'pemasukan'
   ORDER BY nama_kategori
 ");
 
-// Proses form submit
 if (isset($_POST['submit'])) {
     $tanggal = $_POST['tanggal'] ?? '';
     $kategori_id = $_POST['kategori_id'] ?? '';
@@ -42,8 +40,8 @@ if (isset($_POST['submit'])) {
         $jumlah = (float)$jumlah;
 
         $insert = mysqli_query($conn, "
-            INSERT INTO pemasukan (tanggal, kategori_id, deskripsi, jumlah) 
-            VALUES ('$tanggal', $kategori_id, '$deskripsi', $jumlah)
+            INSERT INTO pemasukan (user_id, tanggal, kategori_id, deskripsi, jumlah) 
+            VALUES ($user_id, '$tanggal', $kategori_id, '$deskripsi', $jumlah)
         ");
 
         if ($insert) {
