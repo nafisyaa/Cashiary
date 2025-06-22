@@ -1,19 +1,30 @@
 <?php
+session_start();
+
 include 'header.php';
 include 'sidebar.php';
 include 'db.php';
 
-// Ambil data transaksi gabungan
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+$user_id = $_SESSION['user_id'];
+
 $queryTransaksi = "
+    -- Bagian Pemasukan: Tambahkan WHERE user_id
     SELECT id, tanggal, kategori.nama_kategori AS kategori, deskripsi, jumlah, 'pemasukan' AS jenis
     FROM pemasukan 
     JOIN kategori ON pemasukan.kategori_id = kategori.kategori_id
+    WHERE pemasukan.user_id = $user_id
 
     UNION ALL
 
+    -- Bagian Pengeluaran: Tambahkan WHERE user_id
     SELECT id, tanggal, kategori.nama_kategori AS kategori, deskripsi, jumlah, 'pengeluaran' AS jenis
     FROM pengeluaran
     JOIN kategori ON pengeluaran.kategori_id = kategori.kategori_id
+    WHERE pengeluaran.user_id = $user_id
 
     ORDER BY tanggal DESC, jenis DESC
 ";
@@ -38,7 +49,6 @@ $resTransaksi = mysqli_query($conn, $queryTransaksi);
       </div>
     </div>
 
-    <!-- Table Responsive -->
     <div class="table-responsive">
       <table class="table table-striped w-100 align-middle">
         <thead class="table-light">
